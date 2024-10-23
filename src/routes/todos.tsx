@@ -19,26 +19,14 @@ function useTodos() {
     }
     return [];
   });
-  const [newTodo, setNewTodo] = useState("");
 
   useEffect(() => {
     localStorage.setItem("myTodos", JSON.stringify(todos));
   }, [todos]);
 
-  const handleAddTodo = () => {
-    if (newTodo.trim()) {
-      setTodos([
-        ...todos,
-        { text: newTodo.trim(), isComplete: false, id: Date.now() },
-      ]);
-      setNewTodo("");
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleAddTodo();
-    }
+  const addTodo = (text: string) => {
+    const newTodo = { text: text.trim(), isComplete: false, id: Date.now() };
+    setTodos([...todos, newTodo]);
   };
 
   const toggleIsComplete = (id: number) => {
@@ -52,41 +40,55 @@ function useTodos() {
     );
   };
 
+  const removeTodo = (id: number) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
   return {
-    newTodo,
-    setNewTodo,
-    handleKeyDown,
-    handleAddTodo,
     todos,
     toggleIsComplete,
+    removeTodo,
+    addTodo,
   };
 }
 
-function TodosComponent() {
-  const {
-    newTodo,
-    setNewTodo,
-    handleKeyDown,
-    handleAddTodo,
-    todos,
-    toggleIsComplete,
-  } = useTodos();
+type TodoFormProps = Pick<ReturnType<typeof useTodos>, "addTodo">;
+type TodoListProps = Omit<ReturnType<typeof useTodos>, "addTodo">;
+
+function TodoForm({ addTodo }: TodoFormProps) {
+  const [newTodo, setNewTodo] = useState("");
+
+  const handleAddTodo = () => {
+    addTodo(newTodo);
+    setNewTodo("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleAddTodo();
+    }
+  };
 
   return (
-    <div className="p-2">
-      <div className="flex gap-2">
-        <input
-          className="input"
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          onKeyDown={(e) => handleKeyDown(e)}
-          placeholder="Enter a new todo"
-        />
-        <button className="btn" onClick={() => handleAddTodo()}>
-          Submit
-        </button>
-      </div>
+    <div className="flex gap-2">
+      <input
+        className="input"
+        type="text"
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+        onKeyDown={(e) => handleKeyDown(e)}
+        placeholder="Enter a new todo"
+      />
+      <button className="btn" onClick={() => handleAddTodo()}>
+        Submit
+      </button>
+    </div>
+  );
+}
+
+function TodoList({ todos, removeTodo, toggleIsComplete }: TodoListProps) {
+  return (
+    <>
       <h3>Todos:</h3>
       <ul>
         {todos.map((todo) => (
@@ -94,17 +96,30 @@ function TodosComponent() {
             <span className={todo.isComplete ? "line-through" : ""}>
               {todo.text}
             </span>
-            <button
-              className="btn"
-              onClick={() => handleAddTodo()}
-              onClickCapture={() => toggleIsComplete(todo.id)}
-            >
+            <button className="btn" onClick={() => toggleIsComplete(todo.id)}>
               {todo.isComplete ? "Undo" : "Complete"}
             </button>
-            <button className="btn">Remove</button>
+            <button className="btn" onClick={(e) => removeTodo(todo.id)}>
+              Remove
+            </button>
           </li>
         ))}
       </ul>
+    </>
+  );
+}
+
+function TodosComponent() {
+  const { addTodo, todos, toggleIsComplete, removeTodo } = useTodos();
+
+  return (
+    <div className="p-2">
+      <TodoForm addTodo={addTodo} />
+      <TodoList
+        todos={todos}
+        removeTodo={removeTodo}
+        toggleIsComplete={toggleIsComplete}
+      />
     </div>
   );
 }
