@@ -58,31 +58,27 @@ type TodoListProps = Omit<ReturnType<typeof useTodos>, "addTodo">;
 function TodoForm({ addTodo }: TodoFormProps) {
   const [newTodo, setNewTodo] = useState("");
 
-  const handleAddTodo = () => {
-    addTodo(newTodo);
-    setNewTodo("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleAddTodo();
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    if (newTodo.trim() !== "") {
+      addTodo(newTodo.trim());
+      setNewTodo("");
     }
   };
 
   return (
-    <div className="flex gap-2">
+    <form className="flex gap-2" onSubmit={handleSubmit}>
       <input
         className="input"
         type="text"
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
-        onKeyDown={(e) => handleKeyDown(e)}
         placeholder="Enter a new todo"
       />
-      <button className="btn" onClick={() => handleAddTodo()}>
+      <button className="btn" type="submit">
         Submit
       </button>
-    </div>
+    </form>
   );
 }
 
@@ -99,7 +95,7 @@ function TodoList({ todos, removeTodo, toggleIsComplete }: TodoListProps) {
             <button className="btn" onClick={() => toggleIsComplete(todo.id)}>
               {todo.isComplete ? "Undo" : "Complete"}
             </button>
-            <button className="btn" onClick={(e) => removeTodo(todo.id)}>
+            <button className="btn" onClick={() => removeTodo(todo.id)}>
               Remove
             </button>
           </li>
