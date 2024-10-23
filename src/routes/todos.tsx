@@ -5,7 +5,7 @@ export const Route = createFileRoute("/todos")({
   component: TodosComponent,
 });
 
-function TodosComponent() {
+function useTodos() {
   const [todos, setTodos] = useState<string[]>(() => {
     const localStorageTodos = localStorage.getItem("myTodos");
     if (localStorageTodos) {
@@ -31,6 +31,13 @@ function TodosComponent() {
       handleAddTodo();
     }
   };
+
+  return { newTodo, setNewTodo, handleKeyDown, handleAddTodo, todos };
+}
+
+function TodosComponent() {
+  const { newTodo, setNewTodo, handleKeyDown, handleAddTodo, todos } =
+    useTodos();
 
   return (
     <div className="p-2">
