@@ -1,13 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/todos")({
   component: TodosComponent,
 });
 
 function TodosComponent() {
-  const [todos, setTodos] = useState<string[]>([]);
+  const [todos, setTodos] = useState<string[]>(() => {
+    const localStorageTodos = localStorage.getItem("myTodos");
+    if (localStorageTodos) {
+      return JSON.parse(localStorageTodos);
+    }
+    return [];
+  });
   const [newTodo, setNewTodo] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("myTodos", JSON.stringify(todos));
+  }, [todos]);
 
   const handleAddTodo = () => {
     if (newTodo.trim()) {
