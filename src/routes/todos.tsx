@@ -6,12 +6,41 @@ export const Route = createFileRoute("/todos")({
 });
 
 function TodosComponent() {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState<string[]>([]);
+  const [newTodo, setNewTodo] = useState("");
+
+  const handleAddTodo = () => {
+    if (newTodo.trim()) {
+      setTodos([...todos, newTodo]);
+      setNewTodo("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleAddTodo();
+    }
+  };
 
   return (
     <div className="p-2">
-      <h3>Todos</h3>
-      <input />
+      <input
+        className="input"
+        type="text"
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+        onKeyDown={(e) => handleKeyDown(e)}
+        placeholder="Enter a new todo"
+      />
+      <button className="btn" onClick={() => handleAddTodo()}>
+        Submit
+      </button>
+      <h3>Todos:</h3>
+      <ul>
+        {todos.map((todo, index) => (
+          <li key={index}>{todo}</li>
+        ))}
+      </ul>
     </div>
   );
 }
