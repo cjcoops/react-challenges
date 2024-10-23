@@ -5,8 +5,14 @@ export const Route = createFileRoute("/todos")({
   component: TodosComponent,
 });
 
+type Todo = {
+  text: string;
+  isComplete: boolean;
+  id: number;
+};
+
 function useTodos() {
-  const [todos, setTodos] = useState<string[]>(() => {
+  const [todos, setTodos] = useState<Todo[]>(() => {
     const localStorageTodos = localStorage.getItem("myTodos");
     if (localStorageTodos) {
       return JSON.parse(localStorageTodos);
@@ -21,7 +27,10 @@ function useTodos() {
 
   const handleAddTodo = () => {
     if (newTodo.trim()) {
-      setTodos([...todos, newTodo]);
+      setTodos([
+        ...todos,
+        { text: newTodo.trim(), isComplete: false, id: Date.now() },
+      ]);
       setNewTodo("");
     }
   };
@@ -32,30 +41,68 @@ function useTodos() {
     }
   };
 
-  return { newTodo, setNewTodo, handleKeyDown, handleAddTodo, todos };
+  const toggleIsComplete = (id: number) => {
+    setTodos(
+      todos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, isComplete: !todo.isComplete };
+        }
+        return todo;
+      })
+    );
+  };
+
+  return {
+    newTodo,
+    setNewTodo,
+    handleKeyDown,
+    handleAddTodo,
+    todos,
+    toggleIsComplete,
+  };
 }
 
 function TodosComponent() {
-  const { newTodo, setNewTodo, handleKeyDown, handleAddTodo, todos } =
-    useTodos();
+  const {
+    newTodo,
+    setNewTodo,
+    handleKeyDown,
+    handleAddTodo,
+    todos,
+    toggleIsComplete,
+  } = useTodos();
 
   return (
     <div className="p-2">
-      <input
-        className="input"
-        type="text"
-        value={newTodo}
-        onChange={(e) => setNewTodo(e.target.value)}
-        onKeyDown={(e) => handleKeyDown(e)}
-        placeholder="Enter a new todo"
-      />
-      <button className="btn" onClick={() => handleAddTodo()}>
-        Submit
-      </button>
+      <div className="flex gap-2">
+        <input
+          className="input"
+          type="text"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+          onKeyDown={(e) => handleKeyDown(e)}
+          placeholder="Enter a new todo"
+        />
+        <button className="btn" onClick={() => handleAddTodo()}>
+          Submit
+        </button>
+      </div>
       <h3>Todos:</h3>
       <ul>
-        {todos.map((todo, index) => (
-          <li key={index}>{todo}</li>
+        {todos.map((todo) => (
+          <li key={todo.id} className="flex gap-2">
+            <span className={todo.isComplete ? "line-through" : ""}>
+              {todo.text}
+            </span>
+            <button
+              className="btn"
+              onClick={() => handleAddTodo()}
+              onClickCapture={() => toggleIsComplete(todo.id)}
+            >
+              {todo.isComplete ? "Undo" : "Complete"}
+            </button>
+            <button className="btn">Remove</button>
+          </li>
         ))}
       </ul>
     </div>
