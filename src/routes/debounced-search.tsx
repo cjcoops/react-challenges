@@ -5,8 +5,6 @@ export const Route = createFileRoute("/debounced-search")({
   component: DebouncedSearch,
 });
 
-const DEBOUNCE_MS = 1000;
-
 type Result = {
   title: string;
   author: string;
@@ -15,27 +13,33 @@ type Result = {
 
 // Create useDebounce hook, add loading state
 
-function DebouncedSearch() {
-  const [inputValue, setInputValue] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState<Result[]>([]);
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    if (!inputValue) {
-      return;
-    }
-
     const ref = setTimeout(() => {
-      setSearchQuery(inputValue);
-    }, DEBOUNCE_MS);
+      setDebouncedValue(value);
+    }, delay);
 
     return () => clearTimeout(ref);
-  }, [inputValue]);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+function DebouncedSearch() {
+  const [inputValue, setInputValue] = useState("");
+  const [results, setResults] = useState<Result[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const searchQuery = useDebounce(inputValue, 1000);
 
   useEffect(() => {
     if (!searchQuery) {
       return;
     }
+
+    setIsLoading(true);
 
     const url = `https://openlibrary.org/search.json?title=${searchQuery}`;
     fetch(url)
@@ -43,20 +47,15 @@ function DebouncedSearch() {
       .then((data) => {
         console.log(data);
         setResults(
-          data.docs.map(
-            (doc: {
-              title: string;
-              author_name: string[];
-              _version_: string;
-            }) => ({
-              title: doc.title,
-              author: doc.author_name[0],
-              id: self.crypto.randomUUID(),
-            })
-          )
+          data.docs.map((doc: { title: string; author_name: string[] }) => ({
+            title: doc.title,
+            author: doc.author_name?.[0],
+            id: self.crypto.randomUUID(),
+          }))
         );
       })
-      .catch((error) => console.error("Error: ", error));
+      .catch((error) => console.error("Error: ", error))
+      .finally(() => setIsLoading(false));
   }, [searchQuery]);
 
   return (
@@ -68,14 +67,18 @@ function DebouncedSearch() {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
       />
-      <h4>Results:</h4>
-      <ul>
-        {results.map((result) => (
-          <li key={result.id}>
-            {result.title} by {result.author}
-          </li>
-        ))}
-      </ul>
+      {isLoading && <p>Loading...</p>}
+      {results.length > 0 ? (
+        <ul>
+          {results.map((result) => (
+            <li key={result.id}>
+              {result.title} by {result.author}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        !isLoading && "No results found."
+      )}
     </div>
   );
 }
