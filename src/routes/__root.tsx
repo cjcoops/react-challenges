@@ -41,7 +41,15 @@ function RootComponent() {
             className: "font-bold",
           }}
         >
-          Debounced Search
+          Debounce
+        </Link>
+        <Link
+          to="/infinite-scroll"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Infinite
         </Link>
       </div>
       <hr />

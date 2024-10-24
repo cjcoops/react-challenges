@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as TodosImport } from './routes/todos'
+import { Route as InfiniteScrollImport } from './routes/infinite-scroll'
 import { Route as DebouncedSearchImport } from './routes/debounced-search'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
@@ -21,6 +22,12 @@ import { Route as IndexImport } from './routes/index'
 const TodosRoute = TodosImport.update({
   id: '/todos',
   path: '/todos',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const InfiniteScrollRoute = InfiniteScrollImport.update({
+  id: '/infinite-scroll',
+  path: '/infinite-scroll',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -67,6 +74,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DebouncedSearchImport
       parentRoute: typeof rootRoute
     }
+    '/infinite-scroll': {
+      id: '/infinite-scroll'
+      path: '/infinite-scroll'
+      fullPath: '/infinite-scroll'
+      preLoaderRoute: typeof InfiniteScrollImport
+      parentRoute: typeof rootRoute
+    }
     '/todos': {
       id: '/todos'
       path: '/todos'
@@ -83,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/debounced-search': typeof DebouncedSearchRoute
+  '/infinite-scroll': typeof InfiniteScrollRoute
   '/todos': typeof TodosRoute
 }
 
@@ -90,6 +105,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/debounced-search': typeof DebouncedSearchRoute
+  '/infinite-scroll': typeof InfiniteScrollRoute
   '/todos': typeof TodosRoute
 }
 
@@ -98,15 +114,27 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/debounced-search': typeof DebouncedSearchRoute
+  '/infinite-scroll': typeof InfiniteScrollRoute
   '/todos': typeof TodosRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/debounced-search' | '/todos'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/debounced-search'
+    | '/infinite-scroll'
+    | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/debounced-search' | '/todos'
-  id: '__root__' | '/' | '/about' | '/debounced-search' | '/todos'
+  to: '/' | '/about' | '/debounced-search' | '/infinite-scroll' | '/todos'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/debounced-search'
+    | '/infinite-scroll'
+    | '/todos'
   fileRoutesById: FileRoutesById
 }
 
@@ -114,6 +142,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   DebouncedSearchRoute: typeof DebouncedSearchRoute
+  InfiniteScrollRoute: typeof InfiniteScrollRoute
   TodosRoute: typeof TodosRoute
 }
 
@@ -121,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   DebouncedSearchRoute: DebouncedSearchRoute,
+  InfiniteScrollRoute: InfiniteScrollRoute,
   TodosRoute: TodosRoute,
 }
 
@@ -139,6 +169,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/debounced-search",
+        "/infinite-scroll",
         "/todos"
       ]
     },
@@ -150,6 +181,9 @@ export const routeTree = rootRoute
     },
     "/debounced-search": {
       "filePath": "debounced-search.tsx"
+    },
+    "/infinite-scroll": {
+      "filePath": "infinite-scroll.tsx"
     },
     "/todos": {
       "filePath": "todos.tsx"
