@@ -5,14 +5,6 @@ export const Route = createFileRoute("/debounced-search")({
   component: DebouncedSearch,
 });
 
-type Result = {
-  title: string;
-  author: string;
-  id: number;
-};
-
-// Create useDebounce hook, add loading state
-
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -26,6 +18,12 @@ function useDebounce(value: string, delay: number) {
 
   return debouncedValue;
 }
+
+type Result = {
+  title: string;
+  author: string;
+  id: number;
+};
 
 function DebouncedSearch() {
   const [inputValue, setInputValue] = useState("");
@@ -42,6 +40,7 @@ function DebouncedSearch() {
     setIsLoading(true);
 
     const url = `https://openlibrary.org/search.json?title=${searchQuery}`;
+
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
