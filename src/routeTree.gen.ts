@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as TodosImport } from './routes/todos'
+import { Route as DebouncedSearchImport } from './routes/debounced-search'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 
@@ -20,6 +21,12 @@ import { Route as IndexImport } from './routes/index'
 const TodosRoute = TodosImport.update({
   id: '/todos',
   path: '/todos',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DebouncedSearchRoute = DebouncedSearchImport.update({
+  id: '/debounced-search',
+  path: '/debounced-search',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,6 +60,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/debounced-search': {
+      id: '/debounced-search'
+      path: '/debounced-search'
+      fullPath: '/debounced-search'
+      preLoaderRoute: typeof DebouncedSearchImport
+      parentRoute: typeof rootRoute
+    }
     '/todos': {
       id: '/todos'
       path: '/todos'
@@ -68,12 +82,14 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/debounced-search': typeof DebouncedSearchRoute
   '/todos': typeof TodosRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/debounced-search': typeof DebouncedSearchRoute
   '/todos': typeof TodosRoute
 }
 
@@ -81,27 +97,30 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/debounced-search': typeof DebouncedSearchRoute
   '/todos': typeof TodosRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/todos'
+  fullPaths: '/' | '/about' | '/debounced-search' | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/todos'
-  id: '__root__' | '/' | '/about' | '/todos'
+  to: '/' | '/about' | '/debounced-search' | '/todos'
+  id: '__root__' | '/' | '/about' | '/debounced-search' | '/todos'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  DebouncedSearchRoute: typeof DebouncedSearchRoute
   TodosRoute: typeof TodosRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  DebouncedSearchRoute: DebouncedSearchRoute,
   TodosRoute: TodosRoute,
 }
 
@@ -119,6 +138,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/debounced-search",
         "/todos"
       ]
     },
@@ -127,6 +147,9 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.tsx"
+    },
+    "/debounced-search": {
+      "filePath": "debounced-search.tsx"
     },
     "/todos": {
       "filePath": "todos.tsx"

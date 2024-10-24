@@ -35,6 +35,14 @@ function RootComponent() {
         >
           Todos
         </Link>
+        <Link
+          to="/debounced-search"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Debounced Search
+        </Link>
       </div>
       <hr />
       <Outlet />
