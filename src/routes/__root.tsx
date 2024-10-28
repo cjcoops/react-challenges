@@ -51,6 +51,14 @@ function RootComponent() {
         >
           Infinite
         </Link>
+        <Link
+          to="/dynamic-form"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Dynamic
+        </Link>
       </div>
       <hr />
       <Outlet />

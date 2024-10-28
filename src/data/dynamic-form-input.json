@@ -1,0 +1,78 @@
+[
+  {
+    "id": "username",
+    "type": "text",
+    "label": "Username",
+    "placeholder": "Enter your username",
+    "required": true,
+    "validation": {
+      "minLength": 3,
+      "maxLength": 20
+    }
+  },
+  {
+    "id": "email",
+    "type": "email",
+    "label": "Email Address",
+    "placeholder": "Enter your email",
+    "required": true,
+    "validation": {
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    }
+  },
+  {
+    "id": "age",
+    "type": "number",
+    "label": "Age",
+    "placeholder": "Enter your age",
+    "required": false,
+    "validation": {
+      "min": 18,
+      "max": 100
+    }
+  },
+  {
+    "id": "gender",
+    "type": "radio",
+    "label": "Gender",
+    "options": [
+      { "label": "Male", "value": "male" },
+      { "label": "Female", "value": "female" },
+      { "label": "Other", "value": "other" }
+    ],
+    "required": true
+  },
+  {
+    "id": "hobbies",
+    "type": "checkbox",
+    "label": "Hobbies",
+    "options": [
+      { "label": "Reading", "value": "reading" },
+      { "label": "Traveling", "value": "traveling" },
+      { "label": "Sports", "value": "sports" }
+    ],
+    "required": false
+  },
+  {
+    "id": "bio",
+    "type": "textarea",
+    "label": "Short Bio",
+    "placeholder": "Tell us a little about yourself",
+    "required": false,
+    "validation": {
+      "maxLength": 200
+    }
+  },
+  {
+    "id": "country",
+    "type": "select",
+    "label": "Country",
+    "options": [
+      { "label": "United States", "value": "us" },
+      { "label": "Canada", "value": "ca" },
+      { "label": "United Kingdom", "value": "uk" },
+      { "label": "Australia", "value": "au" }
+    ],
+    "required": true
+  }
+]

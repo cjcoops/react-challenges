@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TodosImport } from './routes/todos'
 import { Route as InfiniteScrollImport } from './routes/infinite-scroll'
+import { Route as DynamicFormImport } from './routes/dynamic-form'
 import { Route as DebouncedSearchImport } from './routes/debounced-search'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
@@ -28,6 +29,12 @@ const TodosRoute = TodosImport.update({
 const InfiniteScrollRoute = InfiniteScrollImport.update({
   id: '/infinite-scroll',
   path: '/infinite-scroll',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DynamicFormRoute = DynamicFormImport.update({
+  id: '/dynamic-form',
+  path: '/dynamic-form',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DebouncedSearchImport
       parentRoute: typeof rootRoute
     }
+    '/dynamic-form': {
+      id: '/dynamic-form'
+      path: '/dynamic-form'
+      fullPath: '/dynamic-form'
+      preLoaderRoute: typeof DynamicFormImport
+      parentRoute: typeof rootRoute
+    }
     '/infinite-scroll': {
       id: '/infinite-scroll'
       path: '/infinite-scroll'
@@ -97,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/debounced-search': typeof DebouncedSearchRoute
+  '/dynamic-form': typeof DynamicFormRoute
   '/infinite-scroll': typeof InfiniteScrollRoute
   '/todos': typeof TodosRoute
 }
@@ -105,6 +120,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/debounced-search': typeof DebouncedSearchRoute
+  '/dynamic-form': typeof DynamicFormRoute
   '/infinite-scroll': typeof InfiniteScrollRoute
   '/todos': typeof TodosRoute
 }
@@ -114,6 +130,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/debounced-search': typeof DebouncedSearchRoute
+  '/dynamic-form': typeof DynamicFormRoute
   '/infinite-scroll': typeof InfiniteScrollRoute
   '/todos': typeof TodosRoute
 }
@@ -124,15 +141,23 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/debounced-search'
+    | '/dynamic-form'
     | '/infinite-scroll'
     | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/debounced-search' | '/infinite-scroll' | '/todos'
+  to:
+    | '/'
+    | '/about'
+    | '/debounced-search'
+    | '/dynamic-form'
+    | '/infinite-scroll'
+    | '/todos'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/debounced-search'
+    | '/dynamic-form'
     | '/infinite-scroll'
     | '/todos'
   fileRoutesById: FileRoutesById
@@ -142,6 +167,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   DebouncedSearchRoute: typeof DebouncedSearchRoute
+  DynamicFormRoute: typeof DynamicFormRoute
   InfiniteScrollRoute: typeof InfiniteScrollRoute
   TodosRoute: typeof TodosRoute
 }
@@ -150,6 +176,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   DebouncedSearchRoute: DebouncedSearchRoute,
+  DynamicFormRoute: DynamicFormRoute,
   InfiniteScrollRoute: InfiniteScrollRoute,
   TodosRoute: TodosRoute,
 }
@@ -169,6 +196,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/debounced-search",
+        "/dynamic-form",
         "/infinite-scroll",
         "/todos"
       ]
@@ -181,6 +209,9 @@ export const routeTree = rootRoute
     },
     "/debounced-search": {
       "filePath": "debounced-search.tsx"
+    },
+    "/dynamic-form": {
+      "filePath": "dynamic-form.tsx"
     },
     "/infinite-scroll": {
       "filePath": "infinite-scroll.tsx"
