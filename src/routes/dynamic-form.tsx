@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import data from "../data/dynamic-form-input.json";
+import { useState } from "react";
 
 export const Route = createFileRoute("/dynamic-form")({
   component: DynamicForm,
@@ -22,15 +23,22 @@ export const Route = createFileRoute("/dynamic-form")({
 function DynamicForm() {
   console.log(data);
 
+  const [formState, setFormState] = useState<Record<string, any>>({});
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+    console.log(formState);
+  };
+
+  const handleChange = (id: string, value: string) => {
+    setFormState((prevState) => ({ ...prevState, [id]: value }));
   };
 
   function renderField(control: (typeof data)[number]) {
     switch (control.type) {
       case "radio":
         return (
-          <fieldset className="flex flex-col" key={control.id}>
+          <fieldset className="flex flex-col">
             <legend>{control.label}</legend>
             {control.options?.map((option) => {
               return (
@@ -40,6 +48,7 @@ function DynamicForm() {
                     id={control.id + option.value}
                     name={control.id}
                     value={option.value}
+                    onChange={() => handleChange(control.id, option.value)}
                   ></input>
                   <label htmlFor={control.id + option.value}>
                     {option.label}
@@ -51,7 +60,7 @@ function DynamicForm() {
         );
       case "checkbox":
         return (
-          <fieldset key={control.id}>
+          <fieldset>
             <legend>{control.label}</legend>
 
             {control.options?.map((option) => {
@@ -61,6 +70,15 @@ function DynamicForm() {
                     type="checkbox"
                     id={control.id + option.value}
                     name={control.id}
+                    onChange={(e) => {
+                      const currentValues = formState[control.id] || [];
+                      const newValues = e.target.checked
+                        ? [...currentValues, option.value]
+                        : currentValues.filter(
+                            (val: string) => val !== option.value
+                          );
+                      handleChange(control.id, newValues);
+                    }}
                   />
                   <label htmlFor={control.id + option.value}>
                     {option.label}
@@ -72,9 +90,14 @@ function DynamicForm() {
         );
       case "select":
         return (
-          <div className="flex flex-col" key={control.id}>
+          <div className="flex flex-col">
             <label htmlFor={control.id}>{control.label}</label>
-            <select className="input" id={control.id}>
+            <select
+              className="input"
+              id={control.id}
+              onChange={(e) => handleChange(control.id, e.target.value)}
+            >
+              <option value="">---</option>
               {control.options?.map((option) => (
                 <option value={option.value} key={option.value}>
                   {option.label}
@@ -85,12 +108,13 @@ function DynamicForm() {
         );
       case "textarea":
         return (
-          <div className="flex flex-col" key={control.id}>
+          <div className="flex flex-col">
             <label htmlFor={control.id}>{control.label}</label>
             <textarea
               className="input"
               id={control.id}
               placeholder={control.placeholder}
+              onChange={(e) => handleChange(control.id, e.target.value)}
             />
           </div>
         );
@@ -99,13 +123,14 @@ function DynamicForm() {
       case "email":
       case "number":
         return (
-          <div className="flex flex-col" key={control.id}>
+          <div className="flex flex-col">
             <label htmlFor={control.id}>{control.label}</label>
             <input
               className="input"
               type={control.type}
               id={control.id}
               placeholder={control.placeholder}
+              onChange={(e) => handleChange(control.id, e.target.value)}
             />
           </div>
         );
@@ -117,7 +142,9 @@ function DynamicForm() {
 
   return (
     <form className="p-2 flex flex-col gap-2" onSubmit={handleSubmit}>
-      {data.map((control) => renderField(control))}
+      {data.map((control) => (
+        <div key={control.id}>{renderField(control)}</div>
+      ))}
       <button type="submit" className="button">
         Submit
       </button>
