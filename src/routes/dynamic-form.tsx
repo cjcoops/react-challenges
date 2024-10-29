@@ -49,6 +49,7 @@ function DynamicForm() {
                     name={control.id}
                     value={option.value}
                     onChange={() => handleChange(control.id, option.value)}
+                    required={control.required}
                   ></input>
                   <label htmlFor={control.id + option.value}>
                     {option.label}
@@ -79,6 +80,7 @@ function DynamicForm() {
                           );
                       handleChange(control.id, newValues);
                     }}
+                    required={control.required}
                   />
                   <label htmlFor={control.id + option.value}>
                     {option.label}
@@ -96,6 +98,7 @@ function DynamicForm() {
               className="input"
               id={control.id}
               onChange={(e) => handleChange(control.id, e.target.value)}
+              required={control.required}
             >
               <option value="">---</option>
               {control.options?.map((option) => (
@@ -113,6 +116,7 @@ function DynamicForm() {
             <textarea
               className="input"
               id={control.id}
+              required={control.required}
               placeholder={control.placeholder}
               onChange={(e) => handleChange(control.id, e.target.value)}
             />
@@ -129,6 +133,7 @@ function DynamicForm() {
               className="input"
               type={control.type}
               id={control.id}
+              required={control.required}
               placeholder={control.placeholder}
               onChange={(e) => handleChange(control.id, e.target.value)}
             />
