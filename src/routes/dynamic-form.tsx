@@ -35,25 +35,27 @@ function DynamicForm() {
   };
 
   function renderField(control: (typeof data)[number]) {
-    switch (control.type) {
+    const { id, label, options, type, required, placeholder, validation } =
+      control;
+
+    switch (type) {
       case "radio":
         return (
           <fieldset className="flex flex-col">
-            <legend>{control.label}</legend>
-            {control.options?.map((option) => {
+            <legend>{label}</legend>
+            {options?.map((option) => {
               return (
                 <div key={option.value}>
                   <input
                     type="radio"
-                    id={control.id + option.value}
-                    name={control.id}
+                    id={id + option.value}
+                    name={id}
                     value={option.value}
-                    onChange={() => handleChange(control.id, option.value)}
-                    required={control.required}
+                    checked={formState[id] === option.value}
+                    onChange={() => handleChange(id, option.value)}
+                    required={required}
                   ></input>
-                  <label htmlFor={control.id + option.value}>
-                    {option.label}
-                  </label>
+                  <label htmlFor={id + option.value}>{option.label}</label>
                 </div>
               );
             })}
@@ -62,29 +64,28 @@ function DynamicForm() {
       case "checkbox":
         return (
           <fieldset>
-            <legend>{control.label}</legend>
+            <legend>{label}</legend>
 
-            {control.options?.map((option) => {
+            {options?.map((option) => {
               return (
                 <div key={option.value}>
                   <input
                     type="checkbox"
-                    id={control.id + option.value}
-                    name={control.id}
+                    id={id + option.value}
+                    name={id}
+                    checked={(formState[id] || []).includes(option.value)}
                     onChange={(e) => {
-                      const currentValues = formState[control.id] || [];
+                      const currentValues = formState[id] || [];
                       const newValues = e.target.checked
                         ? [...currentValues, option.value]
                         : currentValues.filter(
                             (val: string) => val !== option.value
                           );
-                      handleChange(control.id, newValues);
+                      handleChange(id, newValues);
                     }}
-                    required={control.required}
+                    required={required}
                   />
-                  <label htmlFor={control.id + option.value}>
-                    {option.label}
-                  </label>
+                  <label htmlFor={id + option.value}>{option.label}</label>
                 </div>
               );
             })}
@@ -93,15 +94,16 @@ function DynamicForm() {
       case "select":
         return (
           <div className="flex flex-col">
-            <label htmlFor={control.id}>{control.label}</label>
+            <label htmlFor={id}>{label}</label>
             <select
               className="input"
-              id={control.id}
-              onChange={(e) => handleChange(control.id, e.target.value)}
-              required={control.required}
+              id={id}
+              onChange={(e) => handleChange(id, e.target.value)}
+              value={formState[id] || ""}
+              required={required}
             >
               <option value="">---</option>
-              {control.options?.map((option) => (
+              {options?.map((option) => (
                 <option value={option.value} key={option.value}>
                   {option.label}
                 </option>
@@ -112,13 +114,14 @@ function DynamicForm() {
       case "textarea":
         return (
           <div className="flex flex-col">
-            <label htmlFor={control.id}>{control.label}</label>
+            <label htmlFor={id}>{label}</label>
             <textarea
               className="input"
-              id={control.id}
-              required={control.required}
-              placeholder={control.placeholder}
-              onChange={(e) => handleChange(control.id, e.target.value)}
+              id={id}
+              required={required}
+              placeholder={placeholder}
+              value={formState[id] || ""}
+              onChange={(e) => handleChange(id, e.target.value)}
             />
           </div>
         );
@@ -134,7 +137,13 @@ function DynamicForm() {
               type={control.type}
               id={control.id}
               required={control.required}
+              minLength={validation?.minLength}
+              maxLength={validation?.maxLength}
+              min={validation?.min}
+              max={validation?.max}
+              pattern={validation?.pattern}
               placeholder={control.placeholder}
+              value={formState[id] || ""}
               onChange={(e) => handleChange(control.id, e.target.value)}
             />
           </div>
